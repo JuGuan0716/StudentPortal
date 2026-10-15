@@ -26,8 +26,44 @@
 				<td>@student.Email</td>
 				<td>
 					<a class="btn btn-primary" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
+					<button type="button" class="btn btn-danger btn-delete ms-2" data-id="@student.Id">Delete</button>
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+@section Scripts {
+	<script>
+		$(function (){
+			// take data from the selected row to delete
+			$('.btn-delete').on('click', function () {
+				var id = $(this).data('id');
+				var row = $(this).closest('tr');
+
+				if(!confirm('are you sure want to delete?')){
+					return;
+				}
+
+				$.ajax({
+					url: '@Url.Action("DeleteStudent", "Students")',
+					type: 'POST',
+					data: {id: id}, //id left is parameter in controller, right is in js
+					success: function (response) {
+						if (response.success){
+							row.fadeOut(300, function() {
+								$(this).remove();
+							});
+						} else {
+							alert(response.message);
+						}
+					},
+					error: function() {
+						alert('Unable to delete');
+					}
+				});
+
+			});
+		});
+	</script>
+}
